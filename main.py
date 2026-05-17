@@ -6,14 +6,10 @@ from fastapi import FastAPI, UploadFile, File
 from tensorflow.keras.models import load_model
 from PIL import Image
 
-# =========================================================
 # FastAPI App
-# =========================================================
 app = FastAPI()
 
-# =========================================================
-# Load Model
-# =========================================================
+# Load Model & Labels
 MODEL_PATH = "model.keras"
 LABEL_PATH = "label.txt"
 
@@ -22,9 +18,9 @@ model = load_model(MODEL_PATH)
 with open(LABEL_PATH, "r") as f:
     labels = [line.strip() for line in f.readlines()]
 
-# =========================================================
+
+
 # Preprocessing Function
-# =========================================================
 def preprocess_image(
     image_bytes,
     image_size=(160, 160),
@@ -54,9 +50,9 @@ def preprocess_image(
 
     return img_array
 
-# =========================================================
+
+
 # Prediction Endpoint
-# =========================================================
 @app.post("/predict")
 async def predict_image(
     file: UploadFile = File(...),
