@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const predictController = require('../controllers/predictController');
+const { predictImage } = require('../controllers/predictController');
 
-const upload = multer({ dest: 'uploads/' });
+// Menggunakan memoryStorage agar file tidak menumpuk dan mengotori harddisk laptop kamu
+const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/predict', upload.single('image'), predictController.predictImage);
+// Endpoint ini yang nantinya akan ditembak dari React Front-End
+// Parameter 'image' adalah nama field Form-Data yang wajib dikirim dari React
+router.post('/scan-deepfake', upload.single('image'), predictImage);
 
 module.exports = router;
