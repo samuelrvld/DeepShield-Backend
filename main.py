@@ -2,65 +2,51 @@ import os
 import io
 import numpy as np
 from PIL import Image
+from dotenv import load_dotenv
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from tensorflow.keras.models import load_model
 from groq import Groq
 
 
-# ==================================
-# FastAPI
-# ==================================
-app = FastAPI()
-
-
-# ==================================
 # Config
-# ==================================
+app = FastAPI()
 MODEL_PATH = "model.keras"
 LABEL_PATH = "label.txt"
 
+load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 if not GROQ_API_KEY:
     raise ValueError("GROQ_API_KEY belum diatur")
 
 
-# ==================================
 # Load Resource
-# ==================================
 model = load_model(MODEL_PATH)
 
 with open(LABEL_PATH, "r") as f:
     labels = [line.strip() for line in f.readlines()]
 
-client = Groq(
-    api_key=GROQ_API_KEY
-)
+client = Groq(api_key=GROQ_API_KEY)
 
 
-# ==================================
-# Image Preprocess
-# ==================================
+# Image Preprocessing Function
 def preprocess_image(
     image_bytes,
     image_size=(160, 160),
     color_mode="rgb"
-):
+    ):
 
     img = Image.open(io.BytesIO(image_bytes))
-
+    
     if color_mode == "rgb":
         img = img.convert("RGB")
     else:
         img = img.convert("L")
-
+    
     img = img.resize(image_size)
-
     img_array = np.array(img)
-
     img_array = img_array.astype("float32") / 255.0
-
     img_array = np.expand_dims(
         img_array,
         axis=0
@@ -69,11 +55,8 @@ def preprocess_image(
     return img_array
 
 
-# ==================================
-# Risk Level
-# ==================================
+# Risk Level Calculation Function
 def calculate_risk(confidence):
-
     if confidence >= 90:
         return "HIGH"
 
@@ -83,13 +66,9 @@ def calculate_risk(confidence):
     return "LOW"
 
 
-# ==================================
 # Call Generative AI
-# ==================================
 def call_genai(result_data):
-
     try:
-
         messages = [
             {
                 "role": "system",
@@ -122,17 +101,14 @@ Aturan:
         return response.choices[0].message.content
 
     except Exception as e:
-
         print("GenAI Error:", e)
-
+        
         return (
             "Penjelasan otomatis tidak tersedia saat ini."
         )
 
 
-# ==================================
 # Prediction Endpoint
-# ==================================
 @app.post("/predict")
 async def predict_image(
     file: UploadFile = File(...),
@@ -140,10 +116,8 @@ async def predict_image(
 ):
 
     try:
-
         # Validate file
         if not file.content_type.startswith("image/"):
-
             raise HTTPException(
                 status_code=400,
                 detail="File harus berupa gambar"
@@ -163,70 +137,45 @@ async def predict_image(
             verbose=0
         )
 
+        # Validate output
         if prediction.shape != (1, 1):
-
+            
             raise HTTPException(
                 status_code=500,
                 detail="Format output model tidak sesuai"
             )
 
+        # Interpret results
         score = float(prediction[0][0])
-
         probabilities = {
-            labels[0]: round(
-                (1 - score) * 100,
-                2
-            ),
-            labels[1]: round(
-                score * 100,
-                2
-            )
+            labels[0]: round((1 - score) * 100, 2),
+            labels[1]: round(score * 100, 2)
         }
-
-        pred_index = (
-            1
-            if score > threshold
-            else 0
-        )
-
+        pred_index = (1 if score > threshold else 0)
         pred_label = labels[pred_index]
+        confidence = round(probabilities[pred_label], 2)
+        risk_level = calculate_risk(confidence)
 
-        confidence = round(
-            probabilities[pred_label],
-            2
-        )
-
-        risk_level = calculate_risk(
-            confidence
-        )
-
-        # Data untuk GenAI
+        # Data for GenAI
         result_data = {
             "prediction": pred_label,
             "confidence": confidence,
             "risk_level": risk_level
         }
 
+        # Get explanation from GenAI
         explanation = call_genai(
             result_data
         )
 
         # Final response
         return {
-
             "filename": file.filename,
-
-            "result": {
-                "prediction": pred_label,
-                "confidence": confidence,
-                "probabilities": probabilities,
-                "raw_score": round(
-                    score,
-                    4
-                ),
-                "risk_level": risk_level
-            },
-
+            "prediction": pred_label,
+            "confidence": confidence,
+            "probabilities": probabilities,
+            "raw_score": round(score, 4),
+            "risk_level": risk_level,
             "explanation": explanation
         }
 
@@ -234,7 +183,6 @@ async def predict_image(
         raise
 
     except Exception as e:
-
         print("Prediction Error:", e)
 
         raise HTTPException(
