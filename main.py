@@ -11,11 +11,18 @@ from groq import Groq
 
 # Config
 app = FastAPI()
-MODEL_PATH = "model.keras"
-LABEL_PATH = "label.txt"
-
+MODEL_PATH = "model/model.keras"
+LABEL_PATH = "model/label.txt"
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+
+# Resource Validation
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(f"{MODEL_PATH} tidak ditemukan")
+
+if not os.path.exists(LABEL_PATH):
+    raise FileNotFoundError(f"{LABEL_PATH} tidak ditemukan")
 
 if not GROQ_API_KEY:
     raise ValueError("GROQ_API_KEY belum diatur")
@@ -114,7 +121,6 @@ async def predict_image(
     file: UploadFile = File(...),
     threshold: float = 0.5
 ):
-
     try:
         # Validate file
         if not file.content_type.startswith("image/"):
