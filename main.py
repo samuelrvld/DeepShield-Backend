@@ -180,7 +180,7 @@ async def predict_image(
             "prediction": pred_label,
             "confidence": confidence,
             "probabilities": probabilities,
-            "raw_score": round(score, 4),
+            "raw_score": score,
             "risk_level": risk_level,
             "explanation": explanation
         }

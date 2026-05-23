@@ -1,6 +1,6 @@
 # Deepfake model API
 
-API ini dibuat sebagai salah satu penyelesaian proyek pada kegiatan Capstone Project Coding Camp powered by DBS Foundation 2026. API ini merupakan **model AI / ML** yang mampu mendeteksi anomali deepfake berupa **klasifikasi** pada data berupa **gambar atau foto**. Output dari model ini terdiri dari prediksi kelas, nilai confidence, probabilitas tiap kelas, dan penjelasan dari **_generative_ AI (Groq / OpenAI)**.
+API ini merupakan **model AI / ML** yang mampu mendeteksi anomali deepfake berupa **klasifikasi** pada data berupa **gambar atau foto**. Output dari model ini terdiri dari prediksi kelas, nilai confidence, probabilitas tiap kelas, dan penjelasan dari **_generative_ AI (Groq / OpenAI)**.
 
 ## Fitur
 
@@ -23,10 +23,10 @@ API ini dibuat sebagai salah satu penyelesaian proyek pada kegiatan Capstone Pro
 
 ```
 deepfake_model_api/
-├── main.py             # Main code
-├── Procfile            # File server (Railway)
+├── main.py             # main code
+├── Procfile            # file configurasi server (Railway)
 ├── README.md
-├── requirements.txt    # Pip dependencies
+├── requirements.txt    # pip dependencies
 └── model/
     ├── label.txt       # label kelas model deepfake
     └── model.keras     # model deepfake
@@ -34,7 +34,7 @@ deepfake_model_api/
 
 ## Prerequisites
 
-- Python 3.8 atau lebih tinggi
+- Python 3.10+
 - pip (Python Package Manager)
 - API Key dari [Groq](https://console.groq.com) untuk generative AI
 
@@ -79,15 +79,15 @@ http://127.0.0.1:8000/docs # atau http://localhost:8000/docs
 
 ```json
 {
-  "filename": "gambar2.jpg",
+  "filename": "mantesting.jpg",
   "prediction": "Real",
-  "confidence": 75.22,
+  "confidence": 75,
   "probabilities": {
-    "Fake": 24.78,
-    "Real": 75.22
+    "Fake": 25,
+    "Real": 75
   },
-  "raw_score": 0.7522,
+  "raw_score": 0.7499796152114868,
   "risk_level": "MEDIUM",
-  "explanation": "Prediksi menunjukkan foto kemungkinan asli dengan tingkat kepercayaan 75,22% dan risiko sedang. Karena tidak ada kepastian mutlak, disarankan memeriksa metadata, sumber asal, serta membandingkan dengan gambar referensi lain. Jika memungkinkan, gunakan alat deteksi tambahan untuk konfirmasi lebih lanjut."
+  "explanation": "Model memperkirakan foto tersebut nyata dengan tingkat kepercayaan 75% dan risiko medium. Hasil ini tidak menjamin kepastian mutlak karena masih ada kemungkinan manipulasi. Disarankan untuk memeriksa metadata, sumber asli, atau membandingkannya dengan gambar lain untuk verifikasi lebih lanjut."
 }
 ```
