@@ -1,3 +1,14 @@
-node_modules
+node_modules/
 .env
-uploads/*
+
+# Abaikan environment Python dan file model berukuran besar
+**/venv/
+**/.venv/
+**/env/
+*.h5
+*.pth
+*.pkl
+*.onnx
+
+# Jika kamu ingin mengabaikan seluruh isi folder model Python sementara waktu agar push lancar:
+deepfake_model_api/
