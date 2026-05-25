@@ -34,7 +34,7 @@ deepfake_model_api/
 
 ## Prerequisites
 
-- Python 3.10+
+- Python 3.11
 - pip (Python Package Manager)
 - API Key dari [Groq](https://console.groq.com) untuk generative AI
 
@@ -42,7 +42,7 @@ deepfake_model_api/
 
 ```bash
 # 1. Setup virtual environment
-python3 -m venv venv        # Windows: py -m venv venv
+python3.11 -m venv venv     # Windows: py -3.11 -m venv venv
 source venv/bin/activate    # Windows: venv\Scripts\activate
 
 # 2. Install dependencies

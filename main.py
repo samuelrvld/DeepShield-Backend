@@ -63,14 +63,27 @@ def preprocess_image(
 
 
 # Risk Level Calculation Function
-def calculate_risk(confidence):
-    if confidence >= 90:
+def calculate_risk(pred_label, confidence):
+
+    pred = pred_label.lower()
+
+    # Jika model yakin gambar FAKE
+    if pred == "fake":
+        if confidence >= 90:
+            return "HIGH"
+        elif confidence >= 70:
+            return "MEDIUM"
+        return "LOW"
+
+    # Jika model yakin gambar REAL
+    elif pred == "real":
+        if confidence >= 90:
+            return "LOW"
+        elif confidence >= 70:
+            return "MEDIUM"
         return "HIGH"
 
-    if confidence >= 70:
-        return "MEDIUM"
-
-    return "LOW"
+    return "UNKNOWN"
 
 
 # Call Generative AI
@@ -160,7 +173,7 @@ async def predict_image(
         pred_index = (1 if score > threshold else 0)
         pred_label = labels[pred_index]
         confidence = round(probabilities[pred_label], 2)
-        risk_level = calculate_risk(confidence)
+        risk_level = calculate_risk(pred_label, confidence)
 
         # Data for GenAI
         result_data = {
