@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-tensorflow==2.19
+tensorflow
 pillow
 python-multipart
 groq
