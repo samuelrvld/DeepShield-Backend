@@ -62,17 +62,6 @@ def preprocess_image(
     return img_array
 
 
-# Risk Level Calculation Function
-def calculate_risk(confidence):
-    if confidence >= 90:
-        return "HIGH"
-
-    if confidence >= 70:
-        return "MEDIUM"
-
-    return "LOW"
-
-
 # Call Generative AI
 def call_genai(result_data):
     try:
@@ -160,13 +149,11 @@ async def predict_image(
         pred_index = (1 if score > threshold else 0)
         pred_label = labels[pred_index]
         confidence = round(probabilities[pred_label], 2)
-        risk_level = calculate_risk(confidence)
 
         # Data for GenAI
         result_data = {
             "prediction": pred_label,
-            "confidence": confidence,
-            "risk_level": risk_level
+            "confidence": confidence
         }
 
         # Get explanation from GenAI
@@ -181,7 +168,6 @@ async def predict_image(
             "confidence": confidence,
             "probabilities": probabilities,
             "raw_score": score,
-            "risk_level": risk_level,
             "explanation": explanation
         }
 
