@@ -104,3 +104,11 @@ async def predict_image(
         "probabilities": probabilities,
         "raw_score": score
     }
+
+# ====================================================================
+# 🔥 TOMBOL STARTER SERVER (BAGIAN YANG KITA TAMBAHKAN AGAR AMAN & HIDUP)
+# ====================================================================
+if __name__ == "__main__":
+    import uvicorn
+    # Menjalankan server FastAPI di localhost (127.0.0.1) port 8000
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
