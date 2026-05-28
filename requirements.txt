@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-tensorflow
-pillow
-python-multipart
-groq
-python-dotenv

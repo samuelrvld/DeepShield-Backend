@@ -1,15 +1,24 @@
 const express = require('express');
-const cors = require('cors');
-const apiRoutes = require('./routes/api');
-require('dotenv').config();
+const router = express.Router();
+const axios = require('axios'); // Pastikan sudah install axios: npm install axios
+const multer = require('multer'); // Untuk menangani upload file
+const upload = multer({ storage: multer.memoryStorage() });
 
-const app = express();
+router.post('/scan-deepfake', upload.single('file'), async (req, res) => {
+    try {
+        // Mengirim file ke server Python (FastAPI)
+        const response = await axios.post(`${process.env.AI_SERVER_URL}/predict`, req.file.buffer, {
+            headers: { 
+                'Content-Type': 'multipart/form-data',
+                ...req.headers // Meneruskan header file
+            }
+        });
 
-app.use(cors());
-app.use(express.json());
+        // Mengirim balik hasil dari AI ke Front-end (Mona)
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: "Gagal terhubung ke AI Engine" });
+    }
+});
 
-// Menggunakan rute dari folder routes
-app.use('/api', apiRoutes);
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server DeepShield aktif di port ${PORT}`));
+module.exports = router;
