@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 .env
 
@@ -12,3 +13,11 @@ node_modules/
 
 # Jika kamu ingin mengabaikan seluruh isi folder model Python sementara waktu agar push lancar:
 deepfake_model_api/
+=======
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables file
+.env
+>>>>>>> f641fd726767fb36c8a9ccdefb20a7d44d5256cf
